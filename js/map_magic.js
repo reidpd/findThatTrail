@@ -1,6 +1,4 @@
 let map, myLat, myLng, myLatLng, places, myMap;
-let gmarkers = [];
-
 class Place {
   constructor (city, state, name, unique_id, directions, lat, lon, description, activities) {
     this.city = city;
@@ -13,26 +11,19 @@ class Place {
     this.description = description;
     this.activities = activities;
   }
-
-  latLon() {
-    return [this.lat, this.lon];
-  }
-
-  emptyActivities(activities) {
-    return (this.activities.length===0);
-  }
-
-  activityTypes(activities) {
-    let activityTypes = [];
-    if (!emptyActivities(this.activities)) {
-      for (let i = 0; i < this.activities.length; i++) {
-        activityTypes.push(this.activities[i].activity_type_name);
-      }
-    }
-    return activityTypes.join(', ');
-  }
-
-  thumbnails(activities) {
+  // latLon() {
+  //   return [this.lat, this.lon];
+  // }
+  // activityTypes(activities) {
+  //   let activityTypes = [];
+  //   if (!emptyActivities(this.activities)) {
+  //     for (let i = 0; i < this.activities.length; i++) {
+  //       activityTypes.push(this.activities[i].activity_type_name);
+  //     }
+  //   }
+  //   return activityTypes.join(', ');
+  // }
+  thumbnails(activities) { // selects thumbnail urls for infowindow display
     let thumbnail_urls = [];
     for (let i = 0; i < this.activities.length; i++) {
       if (this.activities[i].thumbnail !== null) {
@@ -44,57 +35,54 @@ class Place {
     }
     return thumbnail_urls;
   }
-
-  milage(activities) {
+  milage(activities) { // return array of mile
     let mileages = [];
     for (let h = 0; h < this.activities.length; h++) { mileages.push(this.activities[i].length); }
     return mileages.join(', ');
   }
-
 }
-
 let myForm = document.getElementsByTagName("form")[0]; //target form inputs
-myForm.addEventListener('submit', function(evt) {
+myForm.addEventListener('submit', function(evt) { // what happens when user casts submit spell
   evt.preventDefault(); //stop page from reloading
   user_radius = myForm.elements[0].value; //target radius value desired by user
   places = trailApiResults(myLat, myLng, user_radius) //initial fetch gets JSON data from API
-  .then(function(data) {
+  .then(function(data) { // update map with new markers & bounds
     myMap = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 39.8282, lng: -98.5795},
+      center: {lat: 39.8282, lng: -98.5795},  //look later
       zoom: 12,
       streetViewControl: false,
       zoomControl: true,
       mapTypeId: 'terrain',
       zoomControl: true,
       zoomControlOptions: {
-          position: google.maps.ControlPosition.RIGHT_CENTER
+          position: google.maps.ControlPosition.TOP_RIGHT
       }
-    });
-    let homeLatLng = new google.maps.LatLng(myLat, myLng);
+    }); //create new map object
+    let homeLatLng = new google.maps.LatLng(myLat, myLng); // lat&lon for home marker
     let homeMarker = new google.maps.Marker({
       position: homeLatLng,
       map: myMap,
       icon: 'http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
-    });
-    for (let i = 0; i < data.length; i++ ) {
+    }); // create homeMarker
+    for (let i = 0; i < data.length; i++ ) { //instantiate new place class, call mapMaker()
       let place = new Place(data[i].city, data[i].state, data[i].name, data[i].unique_id, data[i].directions, data[i].lat, data[i].lon, data[i].description, data[i].activities);
-      console.log(place);
+      // console.log(place);
       mapMaker(place);
     }
-    let circleOptions = {
+    let circleOptions = { //create options for future circle
       center: myLatLng,
       fillOpacity: 0,
       strokeOpacity: 0,
       map: map,
-    radius: 1609.344*user_radius
-    }
-    let myCircle = new google.maps.Circle(circleOptions);
-    let bounds = myCircle.getBounds();
-    myMap.fitBounds(bounds);
+      radius: 1609.344*user_radius
+    } //create future new circle's options
+    let myCircle = new google.maps.Circle(circleOptions); //create new (hidden) circle
+    let bounds = myCircle.getBounds(); //get bounds of new circle
+    myMap.fitBounds(bounds); // fit edges of map object to new circle's bounds
   });
+  // }
 });
-
-function contentStringGenerator(place) {
+function contentStringGenerator(place) { // create content within infoWindows above markers
   let finale = "";
   finale+=`<div class="card sticky-action hoverable">`;
   finale+=`<div class="card-image waves-effect waves-block waves-light">`;
@@ -115,9 +103,13 @@ function contentStringGenerator(place) {
   finale+=`<p>Location: ${place.city}, ${place.state}</p>`;
   finale+=`</div>`;
   finale+=`<div class="card-action center">`;
-  finale+=`<a href="#" class="blue-text">GOOGLE DIRECTIONS</a>`;
-  finale+=`<a href="#" class="blue-text">INSTAGRAM</a>`;
-  finale+=`<a href="#" class="blue-text">CURRENT WEATHER</a>`;
+  // let gDirectionsHref = `https://maps.googleapis.com/maps/api/directions/json?origin=${myLat},${myLng}&destination=${place.lat},${place.lon}&key=${GMAPS_KEY}`;
+  let jsonStringifyPlace = JSON.stringify(place);
+  // finale+=`<p hidden>${jsonStringifyPlace}</p>`
+  finale+=`<button id="directions_button" class="blue darken-1 white-text" onclick="giveDirections(${place.lat}, ${place.lon})"><a href="../html/directions.html" onclick="giveDirections(${place.lat}, ${place.lon})">GOOGLE DIRECTIONS</a></button>`;
+  console.log(finale);
+  // finale+=`<a href="#" class="blue-text">INSTAGRAM</a>`;
+  // finale+=`<a href="#" class="blue-text">CURRENT WEATHER</a>`;
   finale+=`</div>`;
   finale+=`<div class="card-reveal">`;
   let revealString = `<span class="card-title grey-text text-darken-4">${place.name}<i class="material-icons right">close</i></span>`;
@@ -128,8 +120,6 @@ function contentStringGenerator(place) {
   revealString+="</div></div>"
   finale+=revealString;
   return finale;
-
-
   function activityCardInterpolation(activity) {
     let activityTitle = `<h4>${activity.activity_type_name}</h4>`;
     let activityDescription = `<p>Description: ${activity.description}</p>`;
@@ -140,7 +130,18 @@ function contentStringGenerator(place) {
   }
 }
 
-function mapMaker(place) {
+function giveDirections(placeLat, placeLon) {
+  localStorage.setItem('destination_lat', placeLat);
+  localStorage.setItem('destination_lng', placeLon);
+  // let directionsService = new google.maps.DirectionsService;
+  // let directionsDisplay = new google.maps.DirectionsRenderer({
+  //   draggable: true,
+  //   map: myMap,
+  //   panel: document.getElementById('right-panel')
+  // })
+}
+
+function mapMaker(place) { // set marker placement & info
     let contentString = contentStringGenerator(place);
     let latLng = new google.maps.LatLng(place.lat, place.lon);
     let marker = new google.maps.Marker({
@@ -151,33 +152,42 @@ function mapMaker(place) {
     let infowindow = new google.maps.InfoWindow({
         content: contentString
     });
+    // let directions_button = infowindow.content.getElementById('directions_button');
+    // console.log(directions_button);
+    // directions_button.addListener('click', function() {
+    //     console.log(this);
+    // });
     marker.addListener('click', function() {
         infowindow.open(myMap, marker);
     });
     marker.setMap(myMap);
 }
-
-function initMap() {
+function initMap() { // create first map upon first website loading
   map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 39.8282, lng: -98.5795},
+    center: {lat: 39.8282, lng: -98.5795}, // center of the US
     zoom: 12,
     streetViewControl: false,
-    zoomControl: true,
     mapTypeId: 'terrain',
     zoomControl: true,
     zoomControlOptions: {
-        position: google.maps.ControlPosition.RIGHT_CENTER
+        position: google.maps.ControlPosition.TOP_RIGHT
     }
   });
+  let instructionWindow = new google.maps.InfoWindow({map: map});
+  instructionWindow.setPosition({lat:39.8282, lng:-98.5795});
+  instructionWindow.setContent('Please wait for your location to be tracked before entering a radius');
+
   // Try HTML5 geolocation.
-  if (navigator.geolocation) {
+  if (navigator.geolocation) { // if browser can handle html5 geolocation
     navigator.geolocation.getCurrentPosition(function(position) {
       myLatLng = {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
       myLat = myLatLng.lat;
+      localStorage.setItem('myLat', myLat);
       myLng = myLatLng.lng;
+      localStorage.setItem('myLng', myLng);
       map.setCenter(myLatLng);
       var infoWindow = new google.maps.InfoWindow({map: map});
       infoWindow.setPosition(myLatLng);
@@ -192,7 +202,7 @@ function initMap() {
   }
 
 } //create map seen on first loading of the website
-function trailApiResults(lat, lon, radius) {
+function trailApiResults(lat, lon, radius) { // fetch JSON objects from trailAPI
   let myHeaders = new Headers();
   myHeaders.append('X-Mashape-Key', TRAIL_KEY);
   myHeaders.append('Accept', 'text/plain');
@@ -208,7 +218,7 @@ function trailApiResults(lat, lon, radius) {
   });
   return promise;
 } //initial fetch function
-function handleLocationError(browserHasGeolocation, infoWindow, myLatLng) {
+function handleLocationError(browserHasGeolocation, infoWindow, myLatLng) { //handle geolocation problems
   infoWindow.setPosition(myLatLng);
   infoWindow.setContent(browserHasGeolocation ?
                         'Error: The Geolocation service failed.' :
