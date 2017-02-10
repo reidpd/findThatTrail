@@ -1,4 +1,4 @@
-let map, myLat, myLng, myLatLng, places, myMap;
+let map, myLat, myLng, myLatLng, searchLat, searchLng, searchLatLng, places, myMap;
 class Place {
   constructor (city, state, name, unique_id, directions, lat, lon, description, activities) {
     this.city = city;
@@ -44,44 +44,74 @@ class Place {
 let myForm = document.getElementsByTagName("form")[0]; //target form inputs
 myForm.addEventListener('submit', function(evt) { // what happens when user casts submit spell
   evt.preventDefault(); //stop page from reloading
-  user_radius = myForm.elements[0].value; //target radius value desired by user
-  places = trailApiResults(myLat, myLng, user_radius) //initial fetch gets JSON data from API
-  .then(function(data) { // update map with new markers & bounds
-    myMap = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 39.8282, lng: -98.5795},  //look later
-      zoom: 12,
-      streetViewControl: false,
-      zoomControl: true,
-      mapTypeId: 'terrain',
-      zoomControl: true,
-      zoomControlOptions: {
-          position: google.maps.ControlPosition.TOP_RIGHT
-      }
-    }); //create new map object
-    let homeLatLng = new google.maps.LatLng(myLat, myLng); // lat&lon for home marker
-    let homeMarker = new google.maps.Marker({
-      position: homeLatLng,
-      map: myMap,
-      icon: 'http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
-    }); // create homeMarker
+  let user_radius = myForm.elements[0].value;
+  let latLongAfterDrag = false;
+  parseDataAndMap(user_radius, latLongAfterDrag);
+  // }
+});
+
+function parseDataAndMap(user_radius, latLongAfterDrag) {
+  myMap = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 39.8282, lng: -98.5795},  //look later
+    zoom: 12,
+    streetViewControl: false,
+    zoomControl: true,
+    mapTypeId: 'terrain',
+    zoomControl: true,
+    zoomControlOptions: {
+      position: google.maps.ControlPosition.TOP_RIGHT
+    }
+  }); //create new map object
+  let homeLatLng = new google.maps.LatLng(myLat, myLng); // lat&lon for home marker
+  let homeMarker = new google.maps.Marker({
+    position: homeLatLng,
+    map: myMap,
+    icon: 'http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
+  }); // create homeMarker
+  let searchLatLng = new google.maps.LatLng(searchLat, searchLng);
+  let destination_marker = new google.maps.Marker({
+    position: searchLatLng,
+    map: myMap,
+    icon: '../images/1486704181_compass.png',
+    draggable:true,
+    title:"Drag me!"
+  });
+  destination_marker.addListener('dragend', function(e) {
+    let latLongAfterDrag = e;
+    searchLat = latLongAfterDrag.latLng.lat()
+    searchLng = latLongAfterDrag.latLng.lng()
+    searchLatLng = new google.maps.LatLng(searchLat, searchLng);
+    parseDataAndMap(user_radius, latLongAfterDrag);
+  })
+  let circleOptions = { //create options for future circle
+    center: searchLatLng,
+    fillOpacity: 0,
+    strokeOpacity: 0,
+    map: map,
+    radius: 1609.344*user_radius
+  } //create future new circle's options
+  let myCircle = new google.maps.Circle(circleOptions); //create new (hidden) circle
+  let bounds = myCircle.getBounds(); //get bounds of new circle
+  myMap.fitBounds(bounds); // fit edges of map object to new circle's bounds
+  parseData(user_radius);
+}
+
+function parseData(user_radius, latLongAfterDrag) { //target radius value desired by user
+  if (latLongAfterDrag) {
+      searchLat = latLongAfterDrag.latLng.lat()
+      searchLng = latLongAfterDrag.latLng.lng()
+      searchLatLng = new google.maps.LatLng(searchLat, searchLng);
+      console.log("searchLatLng changed!");
+  }
+  places = trailApiResults(searchLat, searchLng, user_radius) //initial fetch gets JSON data from API
+  .then(function(data) {
     for (let i = 0; i < data.length; i++ ) { //instantiate new place class, call mapMaker()
       let place = new Place(data[i].city, data[i].state, data[i].name, data[i].unique_id, data[i].directions, data[i].lat, data[i].lon, data[i].description, data[i].activities);
       // console.log(place);
       mapMaker(place);
     }
-    let circleOptions = { //create options for future circle
-      center: myLatLng,
-      fillOpacity: 0,
-      strokeOpacity: 0,
-      map: map,
-      radius: 1609.344*user_radius
-    } //create future new circle's options
-    let myCircle = new google.maps.Circle(circleOptions); //create new (hidden) circle
-    let bounds = myCircle.getBounds(); //get bounds of new circle
-    myMap.fitBounds(bounds); // fit edges of map object to new circle's bounds
-  });
-  // }
-});
+  }) // update map with new markers & bounds
+}
 function contentStringGenerator(place) { // create content within infoWindows above markers
   let finale = "";
   finale+=`<div class="card sticky-action hoverable">`;
@@ -107,13 +137,12 @@ function contentStringGenerator(place) { // create content within infoWindows ab
   let jsonStringifyPlace = JSON.stringify(place);
   // finale+=`<p hidden>${jsonStringifyPlace}</p>`
   finale+=`<button id="directions_button" class="blue darken-1 white-text" onclick="giveDirections(${place.lat}, ${place.lon})"><a href="../html/directions.html" onclick="giveDirections(${place.lat}, ${place.lon})">GOOGLE DIRECTIONS</a></button>`;
-  console.log(finale);
   // finale+=`<a href="#" class="blue-text">INSTAGRAM</a>`;
   // finale+=`<a href="#" class="blue-text">CURRENT WEATHER</a>`;
   finale+=`</div>`;
   finale+=`<div class="card-reveal">`;
   let revealString = `<span class="card-title grey-text text-darken-4">${place.name}<i class="material-icons right">close</i></span>`;
-  revealString+=`<p><strong>Directions:</strong> ${place.directions}</p>`
+  revealString+=`<p><strong>Directions:</strong> ${place.directions}</p>`;
   for (let i = 0; i < place.activities.length; i++ ) {
     revealString+=activityCardInterpolation(place.activities[i]);
   }
@@ -139,6 +168,15 @@ function giveDirections(placeLat, placeLon) {
   //   map: myMap,
   //   panel: document.getElementById('right-panel')
   // })
+}
+
+function homeMarkerCreator() {
+  let homeLatLng = new google.maps.LatLng(myLat, myLng); // lat&lon for home marker
+  let homeMarker = new google.maps.Marker({
+    position: homeLatLng,
+    map: myMap,
+    icon: 'http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
+  }); // create homeMarker
 }
 
 function mapMaker(place) { // set marker placement & info
@@ -175,24 +213,58 @@ function initMap() { // create first map upon first website loading
   });
   let instructionWindow = new google.maps.InfoWindow({map: map});
   instructionWindow.setPosition({lat:39.8282, lng:-98.5795});
-  instructionWindow.setContent('Please wait for your location to be tracked before entering a radius');
+  instructionWindow.setContent(`<div class="card-panel teal">
+          <span class="white-text"><h4>Please wait for your location to be tracked before entering a radius above.</h4>
+          </span>
+        </div>`);
 
   // Try HTML5 geolocation.
   if (navigator.geolocation) { // if browser can handle html5 geolocation
-    navigator.geolocation.getCurrentPosition(function(position) {
+    navigator.geolocation.getCurrentPosition(function(position) { // get current coordinates
       myLatLng = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
+        lat: position.coords.latitude, // set GPS latitude
+        lng: position.coords.longitude // set GPS longitude
       };
-      myLat = myLatLng.lat;
-      localStorage.setItem('myLat', myLat);
-      myLng = myLatLng.lng;
-      localStorage.setItem('myLng', myLng);
-      map.setCenter(myLatLng);
-      var infoWindow = new google.maps.InfoWindow({map: map});
-      infoWindow.setPosition(myLatLng);
-      infoWindow.setContent('You are here!');
-
+      myLat = myLatLng.lat; // set lat to var
+      localStorage.setItem('myLat', myLat); // store lat in local storage
+      myLng = myLatLng.lng; // set lng to var
+      localStorage.setItem('myLng', myLng); // store lng in local storage
+      map.setCenter(myLatLng); // make first map center on
+      searchLat = myLat; // initiate searchLat to equal myLat
+      searchLng = myLng; // initiate searchLng to equal myLng
+      var infoWindow = new google.maps.InfoWindow({
+        map: map,
+        position: myLatLng,
+        content: `<div class="card">
+          <div class="card-content green lighten-1">
+            <h4 class="white-text">It's time to findThatTrail!</h4>
+            <p class="white-text">Finding your next great outdoor adventure will feel effortless after using this map. With findThatTrail, you can search for trailheads (and descriptions detailing how to find them) on the fly!</p>
+            <br>
+            <p class="white-text">Your first search will return trailheads within your radius (in miles), and a few extra symbols will pop up on the screen.</p>
+            <br>
+            <p class="white-text"><strong>This is what those symbols look like:</strong></p>
+          </div>
+          <div class="card-tabs">
+            <ul class="tabs tabs-fixed-width">
+              <li class="tab"><a href="#homeIconContent"><img src="http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png"></a></li>
+              <li class="tab"><a href="#compassIconContent"><img src="../images/1486704181_compass.png"></a></li>
+              <li class="tab"><a href="#trailheadIconContent"><img src="https://mt.googleapis.com/vt/icon/name=icons/onion/22-blue-dot.png&scale=1.0"></a></li>
+            </ul>
+          </div>
+          <div class="card-content grey lighten-4">
+            <div id="homeIconContent">The <strong>yellow house icon</strong> represents your current GPS position: this is where Google directions will originate from.</div>
+            <div id="compassIconContent">The <strong>compass icon</strong> represents your current search position: trailheads that are within a given radius from this point will appear on the map, and you can drag this icon to new places on the map to receive an updated set of trailhead markers.</div>
+            <div id="trailheadIconContent">The <strong>blue pin-marker icon</strong> represents a trailhead result. Click on these to open up info cards containing trailhead names, descriptions, and google directions!</div>
+          </div>
+        </div>`
+      });
+      let destination_marker = new google.maps.Marker({
+        position: myLatLng,
+        map: map,
+        icon: '../images/1486704181_compass.png'
+      });
+      // infoWindow.setPosition(myLatLng);
+      // infoWindow.setContent('You are here! Please enter a radius above to begin searching for trailheads near you.');
     }, function() {
       handleLocationError(true, infoWindow, map.getCenter());
     });
