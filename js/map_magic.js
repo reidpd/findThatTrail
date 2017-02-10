@@ -66,7 +66,7 @@ function parseDataAndMap(user_radius, latLongAfterDrag) {
   let homeMarker = new google.maps.Marker({
     position: homeLatLng,
     map: myMap,
-    icon: 'http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
+    icon: 'https://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
   }); // create homeMarker
   let searchLatLng = new google.maps.LatLng(searchLat, searchLng);
   let destination_marker = new google.maps.Marker({
@@ -175,7 +175,7 @@ function homeMarkerCreator() {
   let homeMarker = new google.maps.Marker({
     position: homeLatLng,
     map: myMap,
-    icon: 'http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
+    icon: 'https://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
   }); // create homeMarker
 }
 
