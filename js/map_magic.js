@@ -239,7 +239,7 @@ function initMap() { // create first map upon first website loading
             <div id="compassIconContent"><ul><li>The <strong>compass icon</strong> represents your current search position: trailheads that are within a given radius from this point will appear on the map, and you can drag this icon to new places on the map to receive an updated set of trailhead markers.</li></ul></div>
             <div id="trailheadIconContent"><ul><li>The <strong>blue pin-marker icon</strong> represents a trailhead result. Click on these to open up an info card containing trailhead names and general city/state locations, descriptive directions & activity information behind the card, and a link to driving directions via Google Maps below.</li></ul></div>
           </div>
-          <div class="blue white-text">Enjoy your adventure!</div>
+          <div class="blue white-text "><h5 align="center">Enjoy your adventure!</h5></div>
         </div>`
       });
       let destination_marker = new google.maps.Marker({
