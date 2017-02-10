@@ -220,12 +220,12 @@ function initMap() { // create first map upon first website loading
         position: myLatLng,
         content: `<div class="card">
           <div class="card-content green lighten-1">
-            <h4 class="white-text center-align">It's time to findThatTrail!</h4>
+            <h4 class="white-text center">It's time to findThatTrail!</h4>
             <p class="white-text">Finding your next great outdoor adventure will feel effortless after using this map. With findThatTrail, you can look up trailheads for a variety of exciting activities and descriptive directions on how to find them on the fly!</p>
             <br>
             <p class="white-text">Your first search will return trailheads within your radius (in miles), and a few extra symbols will pop up on the screen.</p>
             <br>
-            <p class="white-text center-align"><strong>This is what those symbols look like:</strong></p>
+            <p class="white-text center"><strong>This is what those symbols look like:</strong></p>
           </div>
           <div class="card-tabs">
             <ul class="tabs tabs-fixed-width">
