@@ -276,7 +276,7 @@ function initMap() { // create first map upon first website loading
 } //create map seen on first loading of the website
 function trailApiResults(lat, lon, radius) { // fetch JSON objects from trailAPI
   let myHeaders = new Headers();
-  myHeaders.append('X-Mashape-Key', TRAIL_KEY);
+  myHeaders.append('X-Mashape-Key', localStorage.TRAIL_KEY);
   myHeaders.append('Accept', 'text/plain');
   let promise = fetch(`https://trailapi-trailapi.p.mashape.com/?lat=${lat}&limit=1000&lon=${lon}&radius=${radius}`, {
     method: 'GET',
