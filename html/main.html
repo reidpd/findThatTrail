@@ -46,18 +46,37 @@
                 <script type="text/javascript" src="../keys_conf.js"></script>
                 <script type="text/javascript" src="../js/map_magic.js"></script>
                 <script>
-                 var GOOGLE_MAP_KEY = GMAPS_KEY;
-                 function loadScript() {
-                   var script = document.createElement('script');
-                   script.type = 'text/javascript';
-                   script.src = 'https://maps.googleapis.com/maps/api/js?' +
-                   'key=' + GOOGLE_MAP_KEY +'&callback=initMap';
-                   script.async = true;
-                   script.defer = true;
-                   document.body.appendChild(script);
-                 }
-                 window.onload = loadScript;
-                </script>
+                function getOrPrompt(lsKeyValue) {
+                  var valInStorage = localStorage.getItem(lsKeyValue);
+
+                  if(!valInStorage) {
+                    valInStorage = prompt(`Enter a value for ${lsKeyValue}`);
+                    localStorage.setItem(lsKeyValue, valInStorage);
+                  }
+
+                  return valInStorage;
+                }
+
+                let gmaps_key = getOrPrompt('GMAPS_KEY');
+                let trail_key = getOrPrompt('TRAIL_KEY');
+                let googleSrc = `` // put proper src in here
+                let scriptTag = document.createElement('script');
+                scriptTag.src = googleSrc;
+                document.body.append(scriptTag);
+            </script>
+            <script>
+            var GOOGLE_MAP_KEY = GMAPS_KEY;
+            function loadScript() {
+              var script = document.createElement('script');
+              script.type = 'text/javascript';
+              script.src = 'https://maps.googleapis.com/maps/api/js?' +
+              'key=' + GOOGLE_MAP_KEY +'&callback=initMap';
+              script.async = true;
+              script.defer = true;
+              document.body.appendChild(script);
+            }
+            window.onload = loadScript;
+            </script>
 
   </body>
 </html>
