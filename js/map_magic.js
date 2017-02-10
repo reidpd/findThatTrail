@@ -116,7 +116,7 @@ function contentStringGenerator(place) { // create content within infoWindows ab
   let finale = "";
   finale+=`<div class="card sticky-action hoverable">`;
   finale+=`<div class="card-image waves-effect waves-block waves-light">`;
-  finale+=`<img class="activator" src="${place.thumbnails(place.activities)[0]}">`;
+  finale+=`<img class="activator" src="${place.thumbnails(place.activities).reverse()[0]}">`;
   //https://mir-s3-cdn-cf.behance.net/project_modules/disp/7c3e0b10010291.560ddf96ea074.png
   // let carousel = `<div class="carousel carousel-slider">`;
   // for (let k = 0; k < place.activities.length; k++) {
@@ -133,9 +133,7 @@ function contentStringGenerator(place) { // create content within infoWindows ab
   finale+=`<p>Location: ${place.city}, ${place.state}</p>`;
   finale+=`</div>`;
   finale+=`<div class="card-action center">`;
-  // let gDirectionsHref = `https://maps.googleapis.com/maps/api/directions/json?origin=${myLat},${myLng}&destination=${place.lat},${place.lon}&key=${GMAPS_KEY}`;
   let jsonStringifyPlace = JSON.stringify(place);
-  // finale+=`<p hidden>${jsonStringifyPlace}</p>`
   finale+=`<button id="directions_button" class="blue darken-1 white-text" onclick="giveDirections(${place.lat}, ${place.lon})"><a href="../html/directions.html" onclick="giveDirections(${place.lat}, ${place.lon})">GOOGLE DIRECTIONS</a></button>`;
   // finale+=`<a href="#" class="blue-text">INSTAGRAM</a>`;
   // finale+=`<a href="#" class="blue-text">CURRENT WEATHER</a>`;
@@ -159,24 +157,9 @@ function contentStringGenerator(place) { // create content within infoWindows ab
   }
 }
 
-function giveDirections(placeLat, placeLon) {
+function giveDirections(placeLat, placeLon) { //send destination latLng coordinates to directions page via localStorage
   localStorage.setItem('destination_lat', placeLat);
   localStorage.setItem('destination_lng', placeLon);
-  // let directionsService = new google.maps.DirectionsService;
-  // let directionsDisplay = new google.maps.DirectionsRenderer({
-  //   draggable: true,
-  //   map: myMap,
-  //   panel: document.getElementById('right-panel')
-  // })
-}
-
-function homeMarkerCreator() {
-  let homeLatLng = new google.maps.LatLng(myLat, myLng); // lat&lon for home marker
-  let homeMarker = new google.maps.Marker({
-    position: homeLatLng,
-    map: myMap,
-    icon: 'https://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
-  }); // create homeMarker
 }
 
 function mapMaker(place) { // set marker placement & info
