@@ -220,12 +220,12 @@ function initMap() { // create first map upon first website loading
         position: myLatLng,
         content: `<div class="card">
           <div class="card-content green lighten-1">
-            <h4 class="white-text">It's time to findThatTrail!</h4>
-            <p class="white-text">Finding your next great outdoor adventure will feel effortless after using this map. With findThatTrail, you can search for trailheads (and descriptions detailing how to find them) on the fly!</p>
+            <h4 class="white-text center-align">It's time to findThatTrail!</h4>
+            <p class="white-text">Finding your next great outdoor adventure will feel effortless after using this map. With findThatTrail, you can look up trailheads for a variety of exciting activities and descriptive directions on how to find them on the fly!</p>
             <br>
             <p class="white-text">Your first search will return trailheads within your radius (in miles), and a few extra symbols will pop up on the screen.</p>
             <br>
-            <p class="white-text"><strong>This is what those symbols look like:</strong></p>
+            <p class="white-text center-align"><strong>This is what those symbols look like:</strong></p>
           </div>
           <div class="card-tabs">
             <ul class="tabs tabs-fixed-width">
@@ -235,9 +235,9 @@ function initMap() { // create first map upon first website loading
             </ul>
           </div>
           <div class="card-content grey lighten-4">
-            <div id="homeIconContent">The <strong>yellow house icon</strong> represents your current GPS position: this is where Google directions will originate from.</div>
-            <div id="compassIconContent">The <strong>compass icon</strong> represents your current search position: trailheads that are within a given radius from this point will appear on the map, and you can drag this icon to new places on the map to receive an updated set of trailhead markers.</div>
-            <div id="trailheadIconContent">The <strong>blue pin-marker icon</strong> represents a trailhead result. Click on these to open up info cards containing trailhead names, descriptions, and google directions!</div>
+            <div id="homeIconContent"><ul><li>The <strong>yellow house icon</strong> represents your current GPS position: this is where Google directions will originate from.</li></ul></div>
+            <div id="compassIconContent"><ul><li>The <strong>compass icon</strong> represents your current search position: trailheads that are within a given radius from this point will appear on the map, and you can drag this icon to new places on the map to receive an updated set of trailhead markers.</li></ul></div>
+            <div id="trailheadIconContent"><ul><li>The <strong>blue pin-marker icon</strong> represents a trailhead result. Click on these to open up info cards containing trailhead names, descriptions, and google directions!</li></ul></div>
           </div>
         </div>`
       });
