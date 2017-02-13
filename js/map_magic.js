@@ -62,12 +62,14 @@ function parseDataAndMap(user_radius, latLongAfterDrag) {
       position: google.maps.ControlPosition.TOP_RIGHT
     }
   }); //create new map object
+  console.log('Did I make it?');
   let homeLatLng = new google.maps.LatLng(myLat, myLng); // lat&lon for home marker
   let homeMarker = new google.maps.Marker({
     position: homeLatLng,
     map: myMap,
     icon: 'http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
   }); // create homeMarker
+  console.log("I should have made it!");
   let searchLatLng = new google.maps.LatLng(searchLat, searchLng);
   let destination_marker = new google.maps.Marker({
     position: searchLatLng,
