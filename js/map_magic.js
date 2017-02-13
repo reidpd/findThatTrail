@@ -67,7 +67,7 @@ function parseDataAndMap(user_radius, latLongAfterDrag) {
   let homeMarker = new google.maps.Marker({
     position: homeLatLng,
     map: myMap,
-    icon: 'http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png'
+    icon: '../images/1487019692_home_yellow.png'
   }); // create homeMarker
   console.log("I should have made it!");
   let searchLatLng = new google.maps.LatLng(searchLat, searchLng);
@@ -231,7 +231,7 @@ function initMap() { // create first map upon first website loading
           </div>
           <div class="card-tabs">
             <ul class="tabs tabs-fixed-width">
-              <li class="tab"><a href="#homeIconContent"><img src="http://www.stevensmithteam.com/templates/version_0001/images/general/icons_misc/markers/home.png"></a></li>
+              <li class="tab"><a href="#homeIconContent"><img src="../images/1487019692_home_yellow.png"></a></li>
               <li class="tab"><a href="#compassIconContent"><img src="../images/1486704181_compass.png"></a></li>
               <li class="tab"><a href="#trailheadIconContent"><img src="https://mt.googleapis.com/vt/icon/name=icons/onion/22-blue-dot.png&scale=1.0"></a></li>
             </ul>
