@@ -1,7 +1,7 @@
 let express = require('express');
 let app = express();
-let path = require('path');
-let trailPath = path.join(__dirname, 'html/index.html');
+//let path = require('path');
+//let trailPath = path.join(__dirname, 'html/index.html');
 
 app.use(express.static('.'));
 
