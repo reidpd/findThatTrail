@@ -3,7 +3,7 @@ let app = express();
 let path = require('path');
 let trailPath = path.join(__dirname, 'html/index.html');
 
-app.use(express.static('.', { index; './html/index.html' }));
+app.use(express.static('.', { index; 'html/index.html' }));
 // app.use(express.static('html/index.html'));
 
 // app.get(trailPath, 'utf8', () => {
