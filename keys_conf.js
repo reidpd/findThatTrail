@@ -1,0 +1,2 @@
+const GMAPS_KEY = 'AIzaSyBCI6f-EBLZ8YpCuNpmoZd4hrcBCjAseBE';
+const TRAIL_KEY = '74sJ7BYGosmsheNK9VN4vG1cDYBqp1c7zJajsnDv55MMgCrcDE';
